@@ -49,11 +49,9 @@ router.post('/createAdminAccount/',async(req,rep,next) =>{
     })
 router.post('/updateAdminAccount/',async(req,rep,next) => {
     let token =req.headers.authorization
-    const decoded_user = jwt.verify(token,'azizbenamar')
-    console.log("d :" ,decoded_user);
-
-    
-    const hashedPassword = await bcrypt.hash(req.body.password,15)
+    try{
+        decoded_user = jwt.verify(token,'azizbenamar')
+        const hashedPassword = await bcrypt.hash(req.body.password,15)
 
         Admin.updateOne({email : req.body.email},{$set : {
             name : req.body.name,
@@ -65,6 +63,14 @@ router.post('/updateAdminAccount/',async(req,rep,next) => {
             else
                 return rep.status(200).json({"result": "account data has been updated successfully"})
         })
+
+
+    }catch (err) {
+        rep.status(200).json({"ERROR" : "Malformed token"})
+      }
+
+    
+
     })
 
 module.exports = router;
