@@ -48,10 +48,17 @@ router.post('/createAdminAccount/',async(req,rep,next) =>{
 
     })
 router.post('/updateAdminAccount/',async(req,rep,next) => {
-        Admin.updateOne({username : req.body.email},{$set : {
-            name : req.body.newData.name,
-            lastname : req.body.newData.lastname,
-            password : req.body.newData.password
+    let token =req.headers.authorization
+    const decoded_user = jwt.verify(token,'azizbenamar')
+    console.log("d :" ,decoded_user);
+
+    
+    const hashedPassword = await bcrypt.hash(req.body.password,15)
+
+        Admin.updateOne({email : req.body.email},{$set : {
+            name : req.body.name,
+            lastname : req.body.lastname,
+            password : hashedPassword
         }},(err,res)=>{
             if (err)
                 return rep.status(200).json(err)
